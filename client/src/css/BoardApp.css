@@ -17,7 +17,7 @@
     /*-webkit-tap-highlight-color: rgba(0, 0, 0, 0);*/
     /*border-radius: 0px;*/
     position: fixed;
-    /*z-index: 1101;*/
+    z-index: 1101;
     width: 100%;
     /*display: flex;*/
     padding-left: 24px;
@@ -53,6 +53,14 @@ h1 {
 
 .content-input {
   height: 700px;
+}
+
+.comment-list {
+  padding-top: 50px;
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: column;
+  list-style: none;
 }
 
 .App-intro {

@@ -32,6 +32,8 @@ class BoardApp extends Component {
     };
     this.handleTouchTap = this.handleTouchTap.bind(this);
     this.handleSubmitBtnClick = this.handleSubmitBtnClick.bind(this);
+    this.handleChangeReply = this.handleChangeReply.bind(this);
+    this.handleCreateReply = this.handleCreateReply.bind(this);
   }
 
   componentDidMount() {
@@ -60,10 +62,10 @@ class BoardApp extends Component {
         },
         body: JSON.stringify({
           id: comments.length,
-          username: this.state.userName,
+          userName: this.state.userName,
           comment: this.state.comment,
           time: Date(),
-          reply: [],
+          replies: [],
         }),
       });
 
@@ -72,7 +74,8 @@ class BoardApp extends Component {
         userName: this.state.userName,
         comment: this.state.comment,
         time: Date(),
-        reply: [],
+        inputReply: '',
+        replies: [],
       };
       comments = comments.concat(newComment);
       this.setState({
@@ -83,7 +86,46 @@ class BoardApp extends Component {
     }
   }
 
+  handleChangeReply(id, reply) {
+    const comments = this.state.comments;
+    comments[id].inputReply = reply;
+    this.setState({
+      comments,
+    });
+  }
+
+  handleCreateReply(id, newReply) {
+    const comments = this.state.comments;
+    fetch('/api/reply', {
+      method: 'post',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        commentId: id,
+        id: comments[id].replies.length,
+        userName: this.state.userName,
+        reply: newReply,
+        time: Date(),
+      }),
+    });
+
+    const reply = {
+      id: comments[id].replies.length,
+      userName: this.state.userName,
+      reply: newReply,
+      time: Date(),
+    };
+    comments[id].replies = comments[id].replies.concat(reply);
+    this.setState({
+      comments,
+    });
+  }
+
   render() {
+    const n = this.state.comments.length;
+    const list = Array.from(Array(n).keys());
     const actions = [
       <FlatButton
         label="Cancel"
@@ -144,16 +186,6 @@ class BoardApp extends Component {
           </Popover>
         </div>
 
-        <FloatingActionButton
-          style={style.floatingButton}
-          onTouchTap={() => {
-            this.setState({
-              dialogOpen: true,
-            });
-          }}
-        >
-          <ContentAdd />
-        </FloatingActionButton>
         <Dialog
           title="Leave a message..."
           actions={actions}
@@ -175,17 +207,27 @@ class BoardApp extends Component {
           </div>
         </Dialog>
 
-        <ul className="commentList">
-          {this.state.comments.map(content =>
-            <div className="replyList" key={content.id}>
+        <ul className="comment-list">
+          {list.map(i =>
+            <div>
               <BoardComment
-                /* key={comment.id}*/
-                content={content}
-                /* addReply={this.handleAddReply}*/
+                content={this.state.comments[i]}
+                handleChangeReply={(id, reply) => this.handleChangeReply(id, reply)}
+                handleCreateReply={(id, newReply) => this.handleCreateReply(id, newReply)}
               />
             </div>,
           )}
         </ul>
+        <FloatingActionButton
+          style={style.floatingButton}
+          onTouchTap={() => {
+            this.setState({
+              dialogOpen: true,
+            });
+          }}
+        >
+          <ContentAdd />
+        </FloatingActionButton>
       </div>
     );
   }

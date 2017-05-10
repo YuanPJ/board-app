@@ -12,7 +12,7 @@ app.use(express.static(`${__dirname}/client/build/`));
 function postComment(req, res) {
   data.push({
     id: req.body.id,
-    username: req.body.username,
+    userName: req.body.userName,
     comment: req.body.comment,
     time: req.body.time,
     replies: req.body.replies,
@@ -20,9 +20,9 @@ function postComment(req, res) {
 }
 
 function postReply(req, res) {
-  data[req.body.postID].replies.push({
+  data[req.body.commentId].replies.push({
     id: req.body.id,
-    username: req.body.username,
+    userName: req.body.userName,
     reply: req.body.reply,
     time: req.body.time,
   });
